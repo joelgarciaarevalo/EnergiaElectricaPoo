@@ -2,6 +2,7 @@ package controllers;
 
 import models.Cliente;
 import models.Consumo;
+import models.GenerarFactura;
 import models.Registrador;
 import views.VistaConsola;
 
@@ -237,7 +238,64 @@ public class ConsumoControlador {
         res.getConsumo().mModificarConsumoXHora(diasDelMes, dia, hora, kw);
     }
 
-    private void mGenerarFactura(){}
+    private void mGenerarFactura(){
+        System.out.print("ID del cliente: ");
+        String id = scanner.nextLine();
+        Cliente cli = sistemaEnergiaCliente.mBuscarCliente(id);
+        if (cli == null) {
+            System.out.println("Cliente no encontrado.");
+            return;
+        } else {
+            System.out.println("Cliente encontrado.");
+        }
+
+        System.out.print("Mes (1 = Enero.. || ... 12 = Diciembre): ");
+        int mes = scanner.nextInt();
+        if (mes < 1 || mes > 12) {
+            System.out.println("Mes inválido.");
+            return;
+        }
+
+        String[] nombresMes = {
+                "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+                "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
+        };
+        String nombreMes = nombresMes[mes - 1];
+
+        scanner.nextLine();
+        System.out.print("Nombre archivo PDF (sin .pdf): ");
+        String nombreArchivo = scanner.nextLine();
+
+        int diaMenorConsumo = -1;
+        int horaMenorConsumo = -1;
+        int diaMayorConsumo = -1;
+        int horaMayorConsumo = -1;
+        int menorConsumo = Integer.MAX_VALUE;
+        int mayorConsumo = Integer.MIN_VALUE;
+
+        for (Registrador res : cli.getRegistradores()) {
+            int[][] consumoMensual = res.getConsumo().getConsumoMensual(mes);
+            for (int dia = 0; dia < consumoMensual.length; dia++) {
+                for (int hora = 0; hora < consumoMensual[dia].length; hora++) {
+                    if (consumoMensual[dia][hora] < menorConsumo) {
+                        menorConsumo = consumoMensual[dia][hora];
+                        diaMenorConsumo = dia + 1;
+                        horaMenorConsumo = hora;
+                    }
+                    if (consumoMensual[dia][hora] > mayorConsumo) {
+                        mayorConsumo = consumoMensual[dia][hora];
+                        diaMayorConsumo = dia + 1;
+                        horaMayorConsumo = hora;
+                    }
+                }
+            }
+        }
+
+        GenerarFactura.generarFactura(cli, mes, nombreArchivo + ".pdf", diaMenorConsumo, horaMenorConsumo, menorConsumo,
+                diaMayorConsumo, horaMayorConsumo, mayorConsumo);
+        System.out.println("Factura generada: " + nombreArchivo + ".pdf");
+    }
+    
 
     /**
      * Carga el consumo por franja horaria de un registrador

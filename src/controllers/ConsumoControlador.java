@@ -42,15 +42,15 @@ public class ConsumoControlador {
                     break;
                 case 7: mCambiarConsumoXHora();
                     break;
-                // case 8: mGenerarFactura();
-                    // break;
-                case 8: mCargarConsumoXFranjas();
+                case 8: mGenerarFactura();
                     break;
-                case 9: System.out.println("Saliendo del programa");
+                case 9: mCargarConsumoXFranjas();
+                    break;
+                case 10: System.out.println("Saliendo del programa");
                     break;
                 default: System.out.println("Opción invalida");
             }
-        } while (opcion != 9);
+        } while (opcion != 10);
         vista.cerrar();
     }
 
@@ -237,7 +237,7 @@ public class ConsumoControlador {
         res.getConsumo().mModificarConsumoXHora(diasDelMes, dia, hora, kw);
     }
 
-    // private void mGenerarFactura();
+    private void mGenerarFactura(){}
 
     /**
      * Carga el consumo por franja horaria de un registrador
